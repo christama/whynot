@@ -75,8 +75,11 @@ def simulate(config, rollouts=10, seed=None):
         max_steps=200,
         model_reporters=model_reporters,
         display_progress=False,
-        # Use a different seed for each rollout
-        variable_parameters={"seed": rng.randint(9999999, size=rollouts)},
+        # Use a different seed for each rollout. Cast to Python ints: since
+        # 3.11, random.seed rejects numpy integers.
+        variable_parameters={
+            "seed": [int(seed) for seed in rng.randint(9999999, size=rollouts)]
+        },
         # Single rollout for each seed
         iterations=1,
     )

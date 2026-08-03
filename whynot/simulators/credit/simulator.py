@@ -25,11 +25,14 @@ class State(BaseState):
     """State of the Credit model."""
 
     #: Matrix of agent features (e.g. https://www.kaggle.com/c/GiveMeSomeCredit/data)
-    features: np.ndarray = dataclasses.field(default_factory=lambda: np.array([]))
-    # features: np.ndarray = CreditData.features
+    # CreditData loads lazily and hands back a fresh copy, so the factory both
+    # supplies the real dataset and avoids sharing mutable state across states.
+    features: np.ndarray = dataclasses.field(
+        default_factory=lambda: CreditData.features
+    )
 
     #: Vector indicating whether or not the agent experiences financial distress
-    labels: np.ndarray = dataclasses.field(default_factory=lambda: np.array([]))
+    labels: np.ndarray = dataclasses.field(default_factory=lambda: CreditData.labels)
 
     def values(self):
         """Return the state as a dictionary of numpy arrays."""

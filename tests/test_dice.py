@@ -3,8 +3,17 @@ import os
 
 import numpy as np
 import pandas as pd
+import pytest
 
 import whynot as wn
+from whynot.simulators.dice.simulator import find_ipopt_executable
+
+# DICE solves its optimization with IPOPT. The binaries bundled with whynot are
+# x86-64 only, so on other architectures IPOPT has to be installed separately.
+pytestmark = pytest.mark.skipif(
+    find_ipopt_executable() is None,
+    reason="No usable IPOPT binary on this platform.",
+)
 
 
 def test_gams():

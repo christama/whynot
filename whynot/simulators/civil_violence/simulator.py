@@ -117,7 +117,8 @@ def simulate(agents, config, seed=None, max_steps=1000):
         prison_interaction=config.prison_interaction,
         arrest_prob_constant=config.arrest_prob_constant,
         max_steps=max_steps,
-        seed=seed,
+        # Since 3.11, random.seed rejects numpy integers.
+        seed=None if seed is None else int(seed),
     )
     # Place agents on grid
     for i, agent in enumerate(agents):

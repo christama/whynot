@@ -304,7 +304,7 @@ def sample_trajectory(env, policy, max_episode_length):
     `next_observation`, `terminal` to numpy arrays of size episode length.
     """
     # initialize env for the beginning of a new rollout
-    ob = env.reset()
+    ob, _ = env.reset()
     obs, acs, rewards, next_obs, terminals = [], [], [], [], []
     steps = 0
     while True:
@@ -313,14 +313,15 @@ def sample_trajectory(env, policy, max_episode_length):
         ac = policy.sample_action(ob)
         acs.append(ac)
         # take that action and record results
-        ob, rew, done, _ = env.step(ac)
+        ob, rew, terminated, truncated, _ = env.step(ac)
         # record result of taking that action
         steps += 1
         next_obs.append(ob)
         rewards.append(rew)
         # End the rollout if the rollout ended
-        # Note that the rollout can end due to done, or due to max_episode_length
-        if done or steps > max_episode_length:
+        # Note that the rollout can end due to the episode finishing, or due to
+        # max_episode_length
+        if terminated or truncated or steps > max_episode_length:
             rollout_done = 1
         else:
             rollout_done = 0

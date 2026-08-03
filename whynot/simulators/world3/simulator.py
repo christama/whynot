@@ -3,7 +3,7 @@ import dataclasses
 import os
 
 import numpy as np
-from py_mini_racer import py_mini_racer
+from py_mini_racer import MiniRacer
 
 import whynot as wn
 from whynot.dynamics import BaseConfig, BaseState, BaseIntervention
@@ -15,17 +15,11 @@ with open(os.path.join(DIR_NAME, "world3_app.js")) as handle:
     WORLD3_JS_CODE = handle.read()
 
 
-# This is a hack to avoid a deadlock issue that
-# arises when concurrently executing many MiniRacerContexts.
-# There's some sort of issue with how the underlying v8 executor
-# refers to contexts. Execution is thread-safe, but
-# should fully sort this out before final release.
-class PyMiniRacerContext(py_mini_racer.MiniRacer):
-    # pylint: disable-msg=too-few-public-methods
-    """Create an PyMiniRacer execution context."""
-
-    def __del__(self):
-        """Do nothing on deletion to avoid clobbering other processes."""
+# This used to subclass MiniRacer to suppress __del__, working around a deadlock
+# in py_mini_racer 0.6 when many contexts executed concurrently. The maintained
+# mini-racer fork reworked context lifetime management, so suppressing cleanup is
+# no longer necessary and would now leak a V8 context per simulation.
+PyMiniRacerContext = MiniRacer
 
 
 @dataclasses.dataclass

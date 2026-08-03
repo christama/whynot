@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import pytest
+
 import whynot.gym as gym
 from whynot.gym import error, envs
 from whynot.gym.envs import registration
@@ -29,9 +31,9 @@ def test_make_with_kwargs():
     env = envs.make("test.ArgumentEnv-v0", arg2="override_arg2", arg3="override_arg3")
     assert env.spec.id == "test.ArgumentEnv-v0"
     assert isinstance(env.unwrapped, ArgumentEnv)
-    assert env.arg1 == "arg1"
-    assert env.arg2 == "override_arg2"
-    assert env.arg3 == "override_arg3"
+    assert env.unwrapped.arg1 == "arg1"
+    assert env.unwrapped.arg2 == "override_arg2"
+    assert env.unwrapped.arg3 == "override_arg3"
 
 
 def test_spec():
@@ -42,25 +44,18 @@ def test_spec():
 def test_missing_lookup():
     registry = registration.EnvRegistry()
     registry.register(id="Test-v1", entry_point=None)
-    try:
+    with pytest.raises(error.NameNotFound):
         registry.spec("Unknown-v1")
-    except error.UnregisteredEnv:
-        pass
-    else:
-        assert False
 
 
 def test_malformed_lookup():
     registry = registration.EnvRegistry()
-    try:
+    with pytest.raises(error.NameNotFound):
         registry.spec(u"“Breakout-v0”")
-    except error.Error as e:
-        assert "malformed environment ID" in "{}".format(
-            e
-        ), "Unexpected message: {}".format(e)
-    else:
-        assert False
 
 
-if __name__ == "__main__":
-    test_missing_lookup()
+def test_no_reregistration():
+    registry = registration.EnvRegistry()
+    registry.register(id="Test-v1", entry_point=None)
+    with pytest.raises(error.Error):
+        registry.register(id="Test-v1", entry_point=None)

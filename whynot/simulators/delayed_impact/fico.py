@@ -126,7 +126,7 @@ def _loan_repaid_probs_factory(
             return repay_df[nearest_scores].values
 
         query_score = query_scores
-        nearest_score = scores[scores.get_loc(query_score, method="nearest")]
+        nearest_score = scores[scores.get_indexer([query_score], method="nearest")[0]]
         return repay_df[nearest_score]
 
     return repaid_probs_fn
@@ -189,7 +189,7 @@ def get_inv_cdf_fns(cdfs: DataFrame) -> Iterable[Callable[[Array], Array]]:
                 return series[nearest_scores].values
 
             query_prob = query_probs
-            nearest_prob = index[index.get_loc(query_prob, method="nearest")]
+            nearest_prob = index[index.get_indexer([query_prob], method="nearest")[0]]
             return series[nearest_prob]
 
         return repaid_probs_fn

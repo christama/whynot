@@ -1,14 +1,15 @@
-"""Gym module following OpenAI Gym style API for RL environments."""
+"""Gym module following the Gymnasium API for RL environments.
 
-import distutils.version
-import os
-import sys
-import warnings
+Gymnasium is the maintained successor to OpenAI Gym, which was abandoned in
+2022 and does not support NumPy 2. Environments are exposed through this
+module rather than imported from Gymnasium directly, so ``import whynot.gym as
+gym`` keeps working for downstream code.
+"""
 
-from gym import error
-from gym.core import Env
-from gym import logger
+from gymnasium import error
+from gymnasium import logger
+from gymnasium.core import Env
 
 from whynot.gym.envs import make, spec, register
 
-__all__ = ["Env", "make", "spec", "register"]
+__all__ = ["Env", "make", "spec", "register", "error", "logger"]
