@@ -1,4 +1,5 @@
 """Experiments on the DICE model."""
+
 import numpy as np
 
 from whynot.dynamics import DynamicsExperiment

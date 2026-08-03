@@ -1,4 +1,5 @@
 """Simulate and analyze runs from the civil violence model."""
+
 import dataclasses
 
 from mesa.datacollection import DataCollector

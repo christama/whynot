@@ -1,4 +1,5 @@
 """Utility functions used by all of the simulators."""
+
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
 import copy
@@ -160,7 +161,7 @@ def sample_size_experiment(
         print("Generating causal datasets...")
     datasets = defaultdict(list)
     all_sates = defaultdict(list)
-    for (sample_size, seed) in itertools.product(sample_sizes, seeds):
+    for sample_size, seed in itertools.product(sample_sizes, seeds):
         dataset = experiment.run(num_samples=sample_size, seed=seed, **parameters)
         all_sates[sample_size].append(dataset.sate)
         datasets[sample_size].append(dataset)
@@ -232,7 +233,7 @@ def parameter_sweep_experiment(
         print("Generating causal datasets...")
     datasets = defaultdict(list)
     sample_ates = defaultdict(list)
-    for (parameter_value, seed) in itertools.product(parameter_values, seeds):
+    for parameter_value, seed in itertools.product(parameter_values, seeds):
         parameters = copy.deepcopy(fixed_parameters)
         parameters[parameter_name] = parameter_value
         dataset = experiment.run(num_samples=sample_size, seed=seed, **parameters)

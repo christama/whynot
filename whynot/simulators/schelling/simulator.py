@@ -1,4 +1,5 @@
 """Simulate and analyze runs from the Schelling segregation model."""
+
 import dataclasses
 
 from mesa.batchrunner import BatchRunner

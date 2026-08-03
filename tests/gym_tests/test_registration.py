@@ -17,7 +17,10 @@ class ArgumentEnv(gym.Env):
 gym.register(
     id="test.ArgumentEnv-v0",
     entry_point="test_registration:ArgumentEnv",
-    kwargs={"arg1": "arg1", "arg2": "arg2",},
+    kwargs={
+        "arg1": "arg1",
+        "arg2": "arg2",
+    },
 )
 
 
@@ -51,7 +54,7 @@ def test_missing_lookup():
 def test_malformed_lookup():
     registry = registration.EnvRegistry()
     with pytest.raises(error.NameNotFound):
-        registry.spec(u"“Breakout-v0”")
+        registry.spec("“Breakout-v0”")
 
 
 def test_no_reregistration():

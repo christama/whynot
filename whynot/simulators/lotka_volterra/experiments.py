@@ -1,10 +1,10 @@
 """Experiments on the Lotka-Volterra model."""
+
 import numpy as np
 
 from whynot.dynamics import DynamicsExperiment
 from whynot.framework import parameter
 from whynot.simulators import lotka_volterra
-
 
 __all__ = ["get_experiments", "RCT", "Confounding", "UnobservedConfounding"]
 

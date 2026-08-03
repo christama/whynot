@@ -5,6 +5,7 @@ The model implementation and parameterization is taken from:
     Misuse and Projected Overdose Deaths in the United States. JAMA Network
     Open. 2019;2(2):e187621. doi:10.1001/jamanetworkopen.2018.7621
 """
+
 import copy
 import dataclasses
 

@@ -1,4 +1,5 @@
 """Reinforcment learning for world3."""
+
 from itertools import product
 
 import numpy as np
@@ -64,5 +65,8 @@ World3Env = ODEEnvBuilder(
 )
 
 register(
-    id="world3-v0", entry_point=World3Env, max_episode_steps=400, reward_threshold=1e5,
+    id="world3-v0",
+    entry_point=World3Env,
+    max_episode_steps=400,
+    reward_threshold=1e5,
 )

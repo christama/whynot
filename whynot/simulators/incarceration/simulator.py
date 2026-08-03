@@ -83,14 +83,26 @@ def infect(person_sex, relation_type, relation_sex):
     """
     infection_probability_month = {
         "f": {
-            "parent": {"f": 0.000849988733768181, "m": 0.0112878570024662,},
-            "sibling": {"f": 0.00801193753900653, "m": 0.0332053842229949,},
+            "parent": {
+                "f": 0.000849988733768181,
+                "m": 0.0112878570024662,
+            },
+            "sibling": {
+                "f": 0.00801193753900653,
+                "m": 0.0332053842229949,
+            },
             "partner": {"*": 0.0043472740358963},
             "child": {"*": 0.0169602401420906},
         },
         "m": {
-            "parent": {"f": 0.00347339838166261, "m": 0.0113344842544054,},
-            "sibling": {"f": 0.00436688659218365, "m": 0.0301729987453868,},
+            "parent": {
+                "f": 0.00347339838166261,
+                "m": 0.0113344842544054,
+            },
+            "sibling": {
+                "f": 0.00436688659218365,
+                "m": 0.0301729987453868,
+            },
             "partner": {"*": 0.00078339990345766},
             "child": {"*": 0.00634223110220566},
         },
@@ -137,9 +149,7 @@ def initialize(config):
 def spread_infection(popu, person, itr, month, config):
     """Pass on infection."""
     # ensure same infection patterns regardless of sentence intervention
-    np.random.seed(
-        hash((config.random_seed, person["num"], itr, month)) % (2 ** 32 - 1)
-    )
+    np.random.seed(hash((config.random_seed, person["num"], itr, month)) % (2**32 - 1))
 
     sex = person["sex"]
 
@@ -166,7 +176,7 @@ def generate_sentence(person, itr, month, config):
     # generate both sentences to ensure consistent counterfactuals
     # offset random seed to avoid interference with infection random seed
     np.random.seed(
-        hash((1, config.random_seed, person["num"], itr, month)) % (2 ** 32 - 1)
+        hash((1, config.random_seed, person["num"], itr, month)) % (2**32 - 1)
     )
 
     gamma_parameter = 1.2

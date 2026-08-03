@@ -1,4 +1,5 @@
 """Infrastructure for dynamical system simulators and experiments."""
+
 import copy
 import dataclasses
 import inspect
@@ -201,7 +202,7 @@ class DynamicsExperiment:
                 ...
                 simulator_config=Config(123),
                 ...)
-            
+
             # Or simulator_config can be a (parameterized) function that
             # returns a config.
             @parameter(name="p", default=0.2)
@@ -237,7 +238,7 @@ class DynamicsExperiment:
         sampler uses randomness, it must include ``rng`` in the signature and use
         it as the sole source of randomness.  This is to ensure that
         DynamicsExperiments can be deterministic if desired.
-        
+
         If ``num_samples`` is in the signature, then the ``state_sampler`` must
         returns a sequence of ``num_samples`` states.  Otherwise, it must
         returns a single state.
@@ -490,7 +491,7 @@ class DynamicsExperiment:
         """
         parallel_args = []
         for state in initial_states:
-            seed = rng.randint(0, 2 ** 32 - 1)
+            seed = rng.randint(0, 2**32 - 1)
             parallel_args.append(
                 (self.simulator.simulate, config, intervention, state, seed)
             )
@@ -873,7 +874,7 @@ class DynamicsExperiment:
             parallelize: bool
                 If true, the experiment class will run all of the simulations in
                 parallel. Parallelization is performed with multiprocessing
-                using a ProcessPool from the concurrent.futures module. 
+                using a ProcessPool from the concurrent.futures module.
             seed: int
                 Random number generator seed used to set all internal randomness.
             causal_graph:

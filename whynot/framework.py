@@ -1,11 +1,11 @@
 """Base experimental class."""
+
 import dataclasses
 import inspect
 import itertools
 from typing import Any
 
 import numpy as np
-
 
 PARAM_COLLECTION = "__parameter_collection__"
 
@@ -303,7 +303,7 @@ class ParameterCollection:
 
     def grid(self):
         """Return a parameter grid.
-        
+
         Examples
         --------
         >>> p1 = ExperimentParams(name="a", values=[1, 2])
@@ -315,7 +315,7 @@ class ParameterCollection:
         2, 3
         1, 4
         2, 4
- 
+
         """
         grid = []
         for values in itertools.product(*[p.values for p in self.params.values()]):

@@ -1,4 +1,5 @@
 """Unit tests for Dice simulator."""
+
 import os
 
 import numpy as np

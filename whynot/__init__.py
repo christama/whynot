@@ -1,4 +1,5 @@
 """whynot package initialization."""
+
 import importlib
 
 __version__ = "0.12.0"
@@ -15,7 +16,6 @@ from whynot.framework import (
     parameter,
 )
 from whynot import utils
-
 
 #: Submodules exposed on demand alongside the simulators. Kept lazy so that
 #: `import whynot` does not require the reinforcement learning dependencies.

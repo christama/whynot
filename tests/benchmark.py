@@ -1,4 +1,5 @@
 """Benchmark execution time of all of the simulators."""
+
 import time
 
 import numpy as np

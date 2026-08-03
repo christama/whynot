@@ -1,4 +1,5 @@
 """Causal experiments for the Schelling model."""
+
 import copy
 import dataclasses
 

@@ -1,4 +1,5 @@
 """Algorithms for causal inference."""
+
 import whynot
 
 try:

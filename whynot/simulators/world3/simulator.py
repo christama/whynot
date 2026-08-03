@@ -1,4 +1,5 @@
 """Interface to the world 3 simulator."""
+
 import dataclasses
 import os
 
@@ -7,7 +8,6 @@ from py_mini_racer import MiniRacer
 
 import whynot as wn
 from whynot.dynamics import BaseConfig, BaseState, BaseIntervention
-
 
 # Load javascript file for execution
 DIR_NAME = os.path.dirname(__file__)

@@ -4,6 +4,7 @@ WhyNot maintains its own registry so that importing whynot does not mutate
 Gymnasium's global registry, and so environment ids cannot collide with those
 of other packages.
 """
+
 from gymnasium.envs.registration import EnvSpec, load_env_creator
 from gymnasium.error import Error, NameNotFound
 from gymnasium.wrappers import OrderEnforcing, TimeLimit

@@ -1,4 +1,5 @@
 """Test suite for whynot framework."""
+
 import numpy as np
 import pytest
 
@@ -8,6 +9,7 @@ from whynot.framework import parameter
 
 def test_parameter():
     """Test the parameter decorator."""
+
     # Ccase when no standard arguments
     @parameter(name="a", default=1, values=[1, 2], description="test a")
     @parameter(name="b", default=3, values=[3, 4], description="test b")

@@ -1,4 +1,5 @@
 """Reinforcement learning environments for the opioid epidemic simulator."""
+
 import numpy as np
 
 from whynot.gym import spaces

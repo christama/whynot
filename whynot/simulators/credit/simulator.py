@@ -9,6 +9,7 @@ and the dynamics are taken from:
     Perdomo, Juan C., Tijana Zrnic, Celestine Mendler-Dünner, and Moritz Hardt.
     "Performative Prediction." arXiv preprint arXiv:2002.06673 (2020).
 """
+
 import copy
 import dataclasses
 from typing import Any
@@ -53,7 +54,9 @@ class Config(BaseConfig):
 
     # Dynamics parameters
     #: Subset of the features that can be manipulated by the agent
-    changeable_features: np.ndarray = dataclasses.field(default_factory=lambda: np.array([0, 5, 7]))
+    changeable_features: np.ndarray = dataclasses.field(
+        default_factory=lambda: np.array([0, 5, 7])
+    )
 
     #: Model how much the agent adapt her features in response to a classifier
     epsilon: float = 0.1

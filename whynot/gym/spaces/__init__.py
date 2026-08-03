@@ -1,4 +1,5 @@
 """Ensure spaces are accessible if you import whynot.gym as gym."""
+
 from gymnasium.spaces import Space
 from gymnasium.spaces import Box
 from gymnasium.spaces import Discrete

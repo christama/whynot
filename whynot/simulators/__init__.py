@@ -6,6 +6,7 @@ a single unavailable dependency makes ``import whynot`` fail outright. With
 lazy imports, an unavailable dependency only affects the simulator that needs
 it.
 """
+
 import importlib
 
 #: Every simulator shipped with whynot.

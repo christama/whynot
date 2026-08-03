@@ -4,6 +4,7 @@ Liu, L., Dean, S., Rolf, E., Simchowitz, M., & Hardt, M. (2018, July). Delayed
 Impact of Fair Machine Learning. In International Conference on Machine
 Learning. (https://arxiv.org/abs/1803.04383)
 """
+
 import copy
 import dataclasses
 import os
@@ -13,7 +14,6 @@ import whynot as wn
 import whynot.traceable_numpy as np
 from whynot.dynamics import BaseConfig, BaseState, BaseIntervention
 from whynot.simulators.delayed_impact.fico import get_data_args as get_FICO_data
-
 
 #################################
 # Globally accessible FICO params
@@ -132,7 +132,7 @@ def determine_repayment(rng, group, score):
 def update_score(config, score, loan_approved, repaid):
     """Update the agent's credit score after a lending interaction."""
     score_change = (
-        config.repayment_score_change ** repaid ** loan_approved
+        config.repayment_score_change**repaid**loan_approved
         * config.default_score_change ** (1 - repaid) ** loan_approved
         * 0.0 ** (1 - loan_approved)
     )
@@ -143,7 +143,7 @@ def update_score(config, score, loan_approved, repaid):
 def update_profits(config, profits, loan_approved, repaid):
     """Update the running total bank profit for the individual."""
     profit_change = (
-        config.repayment_utility ** repaid ** loan_approved
+        config.repayment_utility**repaid**loan_approved
         * config.default_utility ** (1 - repaid) ** loan_approved
         * 0.0 ** (1 - loan_approved)
     )

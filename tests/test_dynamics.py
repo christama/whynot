@@ -1,4 +1,5 @@
 """Tests for methods for working with dynamical systems."""
+
 import copy
 import dataclasses
 
@@ -277,6 +278,7 @@ def test_state_sampler():
 
 def test_config():
     """Test simulator config methods."""
+
     # Make sure config is actually effective
     def covariate_builder(run):
         return len(run.times)

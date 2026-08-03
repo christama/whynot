@@ -35,10 +35,14 @@ def extract_outcomes(run):
 
 
 @parameter(
-    name="threshold_g0", default=650, description="Lending threshold for group 0",
+    name="threshold_g0",
+    default=650,
+    description="Lending threshold for group 0",
 )
 @parameter(
-    name="threshold_g1", default=650, description="Lending threshold for group 1",
+    name="threshold_g1",
+    default=650,
+    description="Lending threshold for group 1",
 )
 def construct_config(threshold_g0, threshold_g1):
     """Experimental config is parameterized by the lending thresholds."""

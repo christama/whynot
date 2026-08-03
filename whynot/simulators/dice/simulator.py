@@ -1,4 +1,5 @@
 """Simulator for Nordhaus' 2007 DICE model."""
+
 from contextlib import contextmanager
 import copy
 import dataclasses

@@ -4,7 +4,6 @@ from whynot.dynamics import DynamicsExperiment
 from whynot.framework import parameter
 from whynot.simulators import zika
 
-
 __all__ = ["get_experiments", "ZikaRCT"]
 
 

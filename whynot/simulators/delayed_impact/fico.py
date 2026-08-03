@@ -3,6 +3,7 @@
 Borrowed from:
     https://github.com/ecreager/delayedimpact-scm-shareable
 """
+
 import os
 from typing import Callable, Iterable
 
@@ -59,7 +60,7 @@ def convert_percentiles(idx):
 
     def convert_one(x):
         partial = 0
-        for ((v, s), (v2, _)) in zip(pdf, pdf[1:]):
+        for (v, s), (v2, _) in zip(pdf, pdf[1:]):
             if partial + s >= x:
                 return v + (v2 - v) * (x - partial) / s
             partial += s

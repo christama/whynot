@@ -1,4 +1,5 @@
 """Smoke tests for the registered WhyNot environments."""
+
 import dataclasses
 
 import numpy as np
@@ -30,7 +31,9 @@ def test_env(spec):
         observation
     )
     assert np.isscalar(reward), "{} is not a scalar for {}".format(reward, env)
-    assert isinstance(terminated, bool), "Expected {} to be a boolean".format(terminated)
+    assert isinstance(terminated, bool), "Expected {} to be a boolean".format(
+        terminated
+    )
     assert isinstance(truncated, bool), "Expected {} to be a boolean".format(truncated)
     assert isinstance(info, dict)
 
@@ -55,7 +58,7 @@ def test_random_rollout(spec_id):
             assert env.observation_space.contains(ob)
             action = agent(ob)
             assert env.action_space.contains(action)
-            (ob, _reward, terminated, truncated, _info) = env.step(action)
+            ob, _reward, terminated, truncated, _info = env.step(action)
             if terminated or truncated:
                 break
         env.close()
@@ -106,7 +109,7 @@ def test_credit_initial_state():
         assert env.observation_space.contains(ob)
         action = env.action_space.sample()
         assert env.action_space.contains(action)
-        (ob, _reward, terminated, truncated, _info) = env.step(action)
+        ob, _reward, terminated, truncated, _info = env.step(action)
         if terminated or truncated:
             break
     ob, _info = env.reset()
