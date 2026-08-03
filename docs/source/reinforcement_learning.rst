@@ -4,8 +4,8 @@ Sequential Decision Making
 ==========================
 WhyNot is also an excellent test bed for sequential decision making and
 reinforcement learning in diverse dynamic environments. WhyNot offers RL
-environments compatible with the OpenAI Gym API style, so that existing code for
-OpenAI Gym can be adapted for WhyNot with minimal changes.
+environments compatible with the Gymnasium API style, so that existing code for
+Gymnasium can be adapted for WhyNot with minimal changes.
 
 Using Existing WhyNot Environments
 ----------------------------------
@@ -22,18 +22,17 @@ To create an environment, set the random seed, and get an initial observation,
 .. code:: python
 
     env = gym.make('HIV-v0')
-    env.seed(1)
-    observation = env.reset()
+    observation, info = env.reset(seed=1)
 
-To sample a random action and perform the random action, use the ``step`` 
-function. The step function returns the reward, the next observation, whether 
-the environment achieves a terminal state, and a dict of additional debugging 
-info.
+To sample a random action and perform the random action, use the ``step``
+function. The step function returns the next observation, the reward, whether
+the environment reached a terminal state, whether it was truncated by reaching
+the end of the simulation horizon, and a dict of additional debugging info.
 
 .. code:: python
 
     action = env.action_space.sample()
-    observation, reward, done, info = env.step(action)
+    observation, reward, terminated, truncated, info = env.step(action)
 
 The actions, observations, and rewards in the WhyNot Gym environment are all
 represented as numpy arrays. The environment works with algorithms implemented
@@ -48,7 +47,7 @@ To define a new custom environment on top of a WhyNot simulator, implement 1)
 the reward function, 2) a mapping from numerical actions to system
 interventions, and, optionally, 3) a mapping from state to observation. The
 class :class:`~whynot.gym.envs.ODEEnvBuilder` then wraps an arbitrary dynamical
-system simulator into a Gym environment for reinforcement learning.
+system simulator into a Gymnasium environment for reinforcement learning.
 
 For example, we defined the HIV environment by 
 

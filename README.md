@@ -1,6 +1,6 @@
 ![WhyNot Logo](docs/source/_static/WhyNot_fullcolor.svg)
 
-[![Build Status](https://travis-ci.com/zykls/whynot.svg?token=ERpRX6SmHRsKJ8dNb4QV&branch=master)](https://travis-ci.com/zykls/whynot)
+[![Build Status](https://github.com/zykls/whynot/actions/workflows/ci.yml/badge.svg)](https://github.com/zykls/whynot/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/whynot/badge/?version=latest)](https://whynot.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -121,8 +121,8 @@ causal inference experiments studying
 
 ### Sequential decision making
 WhyNot supports experimentation with sequential decision making and
-reinforcement learning via unified interface with the [OpenAI
-gym](https://github.com/openai/gym). In this section, we give a simple example
+reinforcement learning via unified interface with
+[Gymnasium](https://github.com/Farama-Foundation/Gymnasium). In this section, we give a simple example
 showing how to use the [HIV simulator](https://whynot.readthedocs.io/en/latest/simulators.html#adams-hiv-simulator)
 for sequential decision making experiments.
 
@@ -131,7 +131,7 @@ First, we initialize the environment and set the random seed.
 import whynot.gym as gym
 
 env = gym.make('HIV-v0')
-env.seed(1)
+observation, info = env.reset(seed=1)
 ```
 Observations in the simulator are a set of 6 states, capturing infected and
 uninfected T-lymphocytes, macrophages, immune response, and copies of free
@@ -144,12 +144,12 @@ policy decisions, in the environment and measure both the next state and the
 reward. In this case, the reward weighs the strength of the immune response, the
 virus count, and the cost of the chosen treatment.
 ```py
-observation = env.reset()
+observation, info = env.reset()
 for _ in range(100):
     action = env.action_space.sample()  # Replace with your treatment policy
-    observation, reward, done, info = env.step(action)
-    if done:
-        observation = env.reset()
+    observation, reward, terminated, truncated, info = env.step(action)
+    if terminated or truncated:
+        observation, info = env.reset()
 ```
 For more details on the simulation, as well as a fully worked out policy
 gradient example, see [this notebook](https://github.com/zykls/whynot/blob/master/examples/reinforcement_learning/hiv_simulator.ipynb).  
@@ -170,13 +170,13 @@ environment](https://whynot.readthedocs.io/en/latest/simulators.html#credit-simu
 import whynot.gym as gym
 
 env = gym.make('Credit-v0')
-env.seed(1)
+dataset, info = env.reset(seed=1)
 ```
 Observations in this environment correspond to a dataset of features for each
 individual and a label indicating whether they experience financial distress
 from the Kaggle [GiveMeSomeCredit dataset](https://www.kaggle.com/c/GiveMeSomeCredit).
 ```py
-dataset = env.reset()
+dataset, info = env.reset()
 ```
 Actions in the environment correspond to choosing a classifier to predict
 default. In response, individuals then *strategically adapt* their features in
@@ -184,7 +184,7 @@ order to obtain a more favorable credit score. The subsequent observation is the
 adapted features, and the reward is the classifier's loss on this distribution
 ```py
 theta = env.action_space.sample() # Your classifier
-dataset, loss, done, info = env.step(theta)
+dataset, loss, terminated, truncated, info = env.step(theta)
 ```
 We can then experiment with the long-term equilibrium arising from repeatedly
 updating the classifier to cope with strategic response.
@@ -193,10 +193,10 @@ def learn_classifier(features, labels):
     # Replace with your learning algorithm
     return env.action_space.sample()
 
-dataset = env.reset()
+dataset, info = env.reset()
 for _ in range(100):
     theta = learn_classifier(dataset["features"], dataset["labels"])
-    dataset, loss, _, _ = env.step(theta)
+    dataset, loss, _, _, _ = env.step(theta)
 ```
 For more details on the simulation and a complete example showing the
 standard retraining procedures perform in a strategic setting, see [this
@@ -219,7 +219,7 @@ WhyNot provides a large number of simulated environments from fields ranging
 from economics to epidemiology. Each simulator comes equipped with a
 representative set of causal inference experiments and exports a uniform Python
 interface that makes it easy to construct new causal inference experiments in
-these environments, as well as an [OpenAI gym](https://github.com/openai/gym)
+these environments, as well as a [Gymnasium](https://github.com/Farama-Foundation/Gymnasium)
 interface to perform reinforcement learning experiments in new environments.
 
 The simulators in WhyNot currently include:

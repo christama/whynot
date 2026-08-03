@@ -102,7 +102,7 @@ Basic Concepts - Reinforcement Learning
 ---------------------------------------
 Beyond causal inference, the simulators in WhyNot provide a ready collection of
 environments for reinforcement learning. Each of these environments is
-accessible through an `OpenAI gym interface <https://gym.openai.com>`_, which
+accessible through a `Gymnasium interface <https://gymnasium.farama.org>`_, which
 makes it easy to test existing methods on the simulators in WhyNot. In this
 section, we showcase how to get started running reinforcement learning
 experiments on the :ref:`adams-hiv-simulator`.
@@ -112,8 +112,8 @@ First, we examine all of the environments available in WhyNot.
 .. code:: python
 
     >>> import whynot.gym as gym
-    >>> for env in gym.envs.registry.all():
-    >>>     print(env.id)
+    >>> for spec in gym.envs.registry.all():
+    >>>     print(spec.id)
 
 Then, we initialize the environment and set the random seed.
 
@@ -121,22 +121,22 @@ Then, we initialize the environment and set the random seed.
 
     >>> import whynot.gym as gym
     >>> env = gym.make('HIV-v0')
-    >>> env.seed(1)
+    >>> observation, info = env.reset(seed=1)
 
 Finally, we run a single rollout of the simulator in exactly the same way
-as experiments on the OpenAI gym.
+as experiments on Gymnasium.
 
 .. code:: python
 
     >>> import whynot.gym as gym
 
-    >>> observation = env.reset()
+    >>> observation, info = env.reset()
     >>> for _ in range(100):
     >>>     # Replace with your treatment policy!
     >>>     action = env.action_space.sample()
-    >>>     observation, reward, done, info = env.step(action)
-    >>>     if done:
-    >>>         observation = env.reset()
+    >>>     observation, reward, terminated, truncated, info = env.step(action)
+    >>>     if terminated or truncated:
+    >>>         observation, info = env.reset()
 
 For a complete worked example on the HIV simulator, as well as more details
 about the action space, the observation space, and the reward function see 
