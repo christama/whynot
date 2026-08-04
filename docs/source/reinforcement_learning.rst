@@ -81,3 +81,13 @@ For example, we defined the HIV environment by
         # Define the reward function
         reward_fn=reward_fn,
     )
+
+.. note::
+    :class:`~whynot.gym.envs.ODEEnvBuilder` advances a simulator by
+    re-simulating it from its current state, which is exact for the ODE
+    simulators. It is the wrong tool for a simulator that carries internal state
+    its published state does not capture, since restarting discards that state.
+    World3 is such a simulator: it keeps smoothed and delayed quantities that
+    are built by a warmup rather than derived from its twelve stocks, so
+    ``world3-v0`` keeps one engine alive for an episode and advances it in place
+    instead. See ``whynot/simulators/world3/environments.py``.
