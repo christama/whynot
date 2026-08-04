@@ -108,16 +108,6 @@ class EnvRegistry:
         self._load_simulators()
         return self.env_specs.values()
 
-    def __contains__(self, id):
-        """Return whether an environment is registered under id."""
-        if id not in self.env_specs:
-            self._load_simulators()
-        return id in self.env_specs
-
-    def __repr__(self):
-        """Summarize the registry."""
-        return f"EnvRegistry({sorted(self.env_specs)})"
-
 
 # Keep for consistency with original API
 # pylint:disable-msg=invalid-name

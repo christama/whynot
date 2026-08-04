@@ -390,13 +390,6 @@ def add_constraint(model, func):
     model.add_component(constraint_name, Constraint(model.time, rule=func))
 
 
-#: Instructions shown when no usable IPOPT binary can be found.
-IPOPT_INSTALL_HINT = (
-    "Install IPOPT so that it is on your PATH, for example with "
-    "`conda install -c conda-forge ipopt` or `brew install ipopt`."
-)
-
-
 def find_ipopt_executable():
     """Locate a usable IPOPT binary, or return None if there is not one.
 
@@ -425,7 +418,9 @@ def get_ipopt_solver():
     if executable_path is None:
         raise ValueError(
             f"No usable IPOPT binary for platform {sys.platform}/"
-            f"{platform.machine()}. {IPOPT_INSTALL_HINT}"
+            f"{platform.machine()}. Install IPOPT so that it is on your PATH, "
+            "for example with `conda install -c conda-forge ipopt` or "
+            "`brew install ipopt`."
         )
     return pyomo.opt.SolverFactory("ipopt", executable=executable_path)
 

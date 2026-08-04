@@ -15,12 +15,6 @@ from whynot.simulators.world3.simulator import (
     step_engine,
 )
 
-#: Config parameters this environment controls, in action order.
-ACTION_PARAMETERS = (
-    "nonrenewable_resource_usage_factor",
-    "persistent_pollution_generation_factor",
-)
-
 
 def get_intervention(action, time):
     """Return the intervention needed to take action in the simulator."""
@@ -66,20 +60,12 @@ def observation_space():
 class World3Env(Env):
     """Sequential decision making on the world3 model.
 
-    Unlike the ODE-based environments, world3 cannot be advanced by
-    re-simulating from its state. Beyond the twelve stocks, the engine carries
-    internal state in its smoothed and delayed quantities, and that state is
-    established by a warmup rather than derived from the stocks. Restarting the
-    engine from the stocks at every step therefore discards it, and the
-    resulting trajectory departs from the model: measured against a continuous
-    run, doing so deviated by 32% within ten steps even under the action that
-    changes nothing, and drove nonrenewable resources negative.
-
-    This environment instead keeps one engine alive for the whole episode and
-    advances it in place, which reproduces a continuous run exactly.
+    Keeps one engine alive for the episode and advances it in place, rather
+    than re-simulating from the state as the ODE environments do. World3 holds
+    internal state in its smoothed and delayed quantities that is established
+    by a warmup and cannot be recovered from the twelve stocks, so restarting
+    the engine each step would silently produce a different model.
     """
-
-    metadata = {"render_modes": []}
 
     def __init__(self, config=None, initial_state=None, timestep=1.0):
         """Initialize the environment.
@@ -135,8 +121,8 @@ class World3Env(Env):
             raise RuntimeError("Cannot step before reset.")
 
         intervention = get_intervention(action, self.time)
-        for parameter in ACTION_PARAMETERS:
-            set_parameter(self.engine, parameter, intervention.updates[parameter])
+        for parameter, value in intervention.updates.items():
+            set_parameter(self.engine, parameter, value)
 
         for _ in range(self._steps_per_timestep()):
             step_engine(self.engine)
@@ -170,14 +156,9 @@ class World3Env(Env):
         return state.values()
 
 
-def build_world3_env(config=None, initial_state=None):
-    """Construct a world3 environment."""
-    return World3Env(config=config, initial_state=initial_state)
-
-
 register(
     id="world3-v0",
-    entry_point=build_world3_env,
+    entry_point=World3Env,
     max_episode_steps=400,
     reward_threshold=1e5,
 )
