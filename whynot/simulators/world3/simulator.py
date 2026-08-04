@@ -263,6 +263,63 @@ def set_config(js_context, config, intervention):
     js_context.eval("resetModel()")
 
 
+#: Iterations fastRun uses to settle the smoothed and delayed quantities before
+#: advancing time. Reproduced here so a stepped engine starts identically.
+WARMUP_ITERATIONS = 100
+
+
+def start_engine(config, initial_state, intervention=None):
+    """Return an engine initialized and warmed up, ready to be stepped.
+
+    World3 carries internal state beyond the twelve stocks, in its smoothed and
+    delayed quantities. That state is built by the warmup below and is *not*
+    recoverable from the stocks, so an engine that is to be advanced
+    incrementally must be initialized once and then kept alive.
+
+    Returns
+    -------
+        js_context: PyMiniRacerContext
+            An engine sitting at ``config.start_time``.
+
+    """
+    js_context = PyMiniRacerContext()
+    js_context.eval(WORLD3_JS_CODE)
+    set_state(js_context, initial_state)
+    set_config(js_context, config, intervention)
+    js_context.eval("resetModel(); initModel();")
+    js_context.eval(
+        f"for (var i = 1; i <= {WARMUP_ITERATIONS}; i++)"
+        " { warmupAuxen(); warmupRates(); tock(); }"
+    )
+    return js_context
+
+
+def step_engine(js_context):
+    """Advance a live engine by a single delta_t."""
+    js_context.eval("timeStep()")
+
+
+def read_state(js_context):
+    """Read the current state out of a live engine."""
+    return State(
+        **{
+            name: js_context.eval(f"{to_camel_case(name)}.k")
+            for name in State.variable_names()
+        }
+    )
+
+
+def set_parameter(js_context, parameter, value):
+    """Set a config parameter on a live engine, effective immediately.
+
+    Parameters switch from ``before`` to ``after`` at ``policyYear``. Setting
+    both makes the value take effect whatever the current time is.
+    """
+    name = to_camel_case(parameter)
+    js_context.eval(f"{name}.before = {to_js_number(value)}")
+    js_context.eval(f"{name}.after = {to_js_number(value)}")
+
+
 def simulate(initial_state, config, intervention=None, seed=None):
     """Run the world3 simulation for the specified initial state and configuration.
 
