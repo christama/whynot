@@ -1,6 +1,7 @@
 """Interface to the world 3 simulator."""
 
 import dataclasses
+import math
 import os
 
 import numpy as np
@@ -155,14 +156,51 @@ def to_camel_case(snake_str):
     return components[0] + "".join(x.title() for x in components[1:])
 
 
+def to_js_number(value):
+    """Render a Python number as a JavaScript numeric literal.
+
+    Values are passed to the engine by interpolating them into JavaScript
+    source, and Python spells the non-finite floats ``nan``, ``inf``, and
+    ``-inf``, none of which are valid JavaScript.
+    """
+    number = float(value)
+    if math.isnan(number):
+        return "NaN"
+    if math.isinf(number):
+        return "Infinity" if number > 0 else "-Infinity"
+    return repr(number)
+
+
 def set_state(js_context, initial_state):
-    """Set the state of the world3 simulator."""
-    for stock_name, value in dataclasses.asdict(initial_state).items():
-        js_context.eval(f"{to_camel_case(stock_name)}.initVal = {value}")
+    """Set the state of the world3 simulator.
+
+    Raises
+    ------
+        ValueError
+            If any state variable is not finite. World3 cannot be meaningfully
+            resumed from such a state, and continuing would silently produce
+            non-finite observations.
+
+    """
+    stocks = dataclasses.asdict(initial_state)
+
+    diverged = sorted(
+        name for name, value in stocks.items() if not math.isfinite(value)
+    )
+    if diverged:
+        raise ValueError(
+            "Cannot set world3 state: "
+            + ", ".join(f"{name}={stocks[name]}" for name in diverged)
+            + ". The simulation has diverged."
+        )
+
+    for stock_name, value in stocks.items():
+        js_context.eval(f"{to_camel_case(stock_name)}.initVal = {to_js_number(value)}")
 
     # special case for resources
     js_context.eval(
-        f"nonrenewableResourcesInitialK = {initial_state.nonrenewable_resources}"
+        "nonrenewableResourcesInitialK = "
+        f"{to_js_number(initial_state.nonrenewable_resources)}"
     )
     js_context.eval("resetModel()")
 
@@ -204,24 +242,24 @@ def decode_states(js_context):
 def set_config(js_context, config, intervention):
     """Set the non-state variables of the world3 simulator."""
     # Set global simulator parameters
-    js_context.eval(f"startTime = {config.start_time}")
-    js_context.eval(f"stopTime = {config.end_time}")
-    js_context.eval(f"dt = {config.delta_t}")
+    js_context.eval(f"startTime = {to_js_number(config.start_time)}")
+    js_context.eval(f"stopTime = {to_js_number(config.end_time)}")
+    js_context.eval(f"dt = {to_js_number(config.delta_t)}")
 
     if intervention:
         intervention_config = config.update(intervention)
-        js_context.eval(f"policyYear = {intervention.time}")
+        js_context.eval(f"policyYear = {to_js_number(intervention.time)}")
     else:
         intervention_config = config
-        js_context.eval(f"policyYear = {config.end_time}")
+        js_context.eval(f"policyYear = {to_js_number(config.end_time)}")
 
     intervention_config = dataclasses.asdict(intervention_config)
     for parameter, before in dataclasses.asdict(config).items():
         if parameter in ["policy_year", "start_time", "end_time", "delta_t"]:
             continue
         after = intervention_config[parameter]
-        js_context.eval(f"{to_camel_case(parameter)}.before = {before}")
-        js_context.eval(f"{to_camel_case(parameter)}.after = {after}")
+        js_context.eval(f"{to_camel_case(parameter)}.before = {to_js_number(before)}")
+        js_context.eval(f"{to_camel_case(parameter)}.after = {to_js_number(after)}")
     js_context.eval("resetModel()")
 
 
