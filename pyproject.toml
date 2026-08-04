@@ -10,9 +10,15 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE.txt"]
 authors = [{ name = "John Miller", email = "miller_john@berkeley.edu" }]
-requires-python = ">=3.9"
+# 3.12 is the floor the dependencies impose, not a preference: current numpy and
+# scipy require it. Declaring anything lower would let pip resolve an older,
+# untested scientific stack rather than fail. Tested on 3.12, 3.13 and 3.14.
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Operating System :: MacOS",
     "Operating System :: POSIX",
 ]
