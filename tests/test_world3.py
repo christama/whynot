@@ -1,5 +1,10 @@
 """Unit tests for world 3 model."""
 
+import math
+
+import numpy as np
+
+import whynot as wn
 from whynot.simulators.world3.simulator import *
 
 
@@ -70,3 +75,68 @@ def test_setup():
             == config.nonrenewable_resource_usage_factor
         )
         assert ctx.eval("nonrenewableResourceUsageFactor.after") == idx * 22
+
+
+def test_stepped_engine_matches_continuous_run():
+    """Advancing an engine step by step must reproduce a continuous run.
+
+    World3 keeps internal state in its smoothed and delayed quantities that is
+    established by the warmup, not derived from the twelve stocks. Restarting
+    the engine from the stocks each step silently produces a different model.
+    """
+    config = Config(delta_t=0.5)
+    reference = wn.world3.simulate(State(), config)
+    expected = {
+        time: np.asarray(state.values(), dtype=float)
+        for time, state in zip(reference.times, reference.states)
+    }
+
+    engine = start_engine(config, State())
+    compared = 0
+    while engine.eval("t") < config.end_time:
+        step_engine(engine)
+        time = engine.eval("t")
+        if not math.isclose(time, round(time), abs_tol=1e-9):
+            continue
+        if round(time) not in expected:
+            continue
+        actual = np.asarray(read_state(engine).values(), dtype=float)
+        assert np.allclose(actual, expected[round(time)], rtol=0, atol=0)
+        compared += 1
+
+    assert compared > 100
+
+
+def test_environment_tracks_the_model():
+    """The neutral action must leave world3 running its standard trajectory.
+
+    Action 4 is (1.0, 1.0), which changes no parameter, so the environment
+    should follow the same trajectory as an unintervened continuous run and
+    stay inside its declared observation space.
+    """
+    config = Config(delta_t=0.5)
+    reference = wn.world3.simulate(State(), config)
+    expected = dict(zip(reference.times, reference.states))
+
+    env = wn.gym.make("world3-v0")
+    observation, _ = env.reset(seed=0)
+    compared = 0
+    while True:
+        observation, _reward, terminated, truncated, _info = env.step(4)
+        assert env.observation_space.contains(np.asarray(observation))
+
+        time = env.unwrapped.time
+        if time in expected:
+            assert np.allclose(
+                np.asarray(observation, dtype=float),
+                np.asarray(expected[time].values(), dtype=float),
+                rtol=0,
+                atol=0,
+            )
+            compared += 1
+        if terminated or truncated:
+            break
+    env.close()
+
+    # Guard against the comparison silently matching no timesteps at all.
+    assert compared > 100
