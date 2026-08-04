@@ -2,7 +2,7 @@
 
 import importlib
 
-__version__ = "0.12.0"
+__version__ = "0.13.0"
 from whynot.algorithms import *
 from whynot import causal_graphs, dynamics, framework, simulators, traceable_numpy
 from whynot.simulators import SIMULATORS
