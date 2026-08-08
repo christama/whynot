@@ -20,7 +20,7 @@ All of the simulators can be found in ``whynot/simulators``. To create a new sim
 called ``new_simulator``, make a folder in ``whynot/simulators`` and create a file
 called ``simulator.py``. For an simple example, see the `lotka volterra
 simulator
-<https://github.com/zykls/whynot/blob/master/whynot/simulators/lotka_volterra/simulator.py>`_.
+<https://github.com/socialfoundations/whynot/blob/master/whynot/simulators/lotka_volterra/simulator.py>`_.
 
 Implementing a simulator requires implementing (1) a ``Config`` class to specify
 parameters of the simulator, (2) an ``Intervention`` class to specify changes to
