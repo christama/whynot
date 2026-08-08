@@ -37,7 +37,15 @@ pytest
 
 ```
 
-7. **Push changes:** If everything looks good, push your changes to your fork.
+7. **Check formatting:** CI rejects code that is not formatted with `black`, so
+   run the linters before pushing. `black whynot tests` reformats in place.
+
+```bash
+sh lint.sh
+
+```
+
+8. **Push changes:** If everything looks good, push your changes to your fork.
 
 ```bash
 git add .
@@ -46,11 +54,13 @@ git push origin feature-branch-name
 
 ```
 
-8. **Open a pull request:** Go back to your forked repository on GitHub, and open a new pull request to the main `whynot` repository.
+9. **Open a pull request:** Go back to your forked repository on GitHub, and open a new pull request to the main `whynot` repository.
 
 ## Code Standards
 
-Please ensure your code adheres to the Python PEP8 style guide. This ensures consistency and readability across the project.
+Code is formatted with [`black`](https://github.com/psf/black) and docstrings
+follow the numpy convention, checked with `pydocstyle`. Both run in CI via
+`lint.sh`, so a pull request that has not been formatted will fail.
 
 ## Tests
 

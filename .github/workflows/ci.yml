@@ -35,10 +35,7 @@ jobs:
           pip install -e .[dev]
 
       - name: Test
-        # gym_tests import spec_list as a top-level module.
         run: pytest tests -v --durations=10
-        env:
-          PYTHONPATH: tests/gym_tests
 
   lint:
     runs-on: ubuntu-latest
