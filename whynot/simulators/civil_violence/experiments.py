@@ -1,4 +1,5 @@
 """Experiments for civil violence simulator."""
+
 import copy
 import dataclasses
 

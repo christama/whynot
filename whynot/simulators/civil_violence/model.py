@@ -1,4 +1,5 @@
 """Implementation of Epstein's Civil Violence model."""
+
 import math
 
 from mesa import Agent

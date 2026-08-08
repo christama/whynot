@@ -1,4 +1,5 @@
 """Simulation code for Lotka-Volterra model."""
+
 import dataclasses
 
 import numpy as np

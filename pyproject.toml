@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "whynot"
+version = "0.13.0"
+description = "A framework for benchmarking causal inference."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE.txt"]
+authors = [{ name = "John Miller", email = "miller_john@berkeley.edu" }]
+# 3.12 is the floor the dependencies impose, not a preference: current numpy and
+# scipy require it. Declaring anything lower would let pip resolve an older,
+# untested scientific stack rather than fail. Tested on 3.12, 3.13 and 3.14.
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX",
+]
+dependencies = [
+    # 1.7 added NumPy 2 support (numpy.core -> numpy._core).
+    "autograd>=1.7",
+    # Gymnasium is the maintained successor to OpenAI Gym, which was abandoned
+    # in 2022 and does not support NumPy 2.
+    "gymnasium>=1.0",
+    # Mesa 1.0 onwards removed the scheduler and grid APIs the agent-based
+    # simulators are written against. 0.8.7 is pure Python and still runs on
+    # current interpreters.
+    "mesa<=0.8.7",
+    # The maintained fork of the abandoned py_mini_racer. Provides the same
+    # py_mini_racer module, and ships aarch64 wheels.
+    "mini-racer>=0.12",
+    "networkx",
+    "numpy",
+    "pandas",
+    "pyomo",
+    "scikit-learn",
+    "scipy",
+    "statsmodels",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "jupyter",
+    "matplotlib",
+    "pre-commit",
+    "pydocstyle",
+    "pytest",
+    "sphinx",
+    "sphinxcontrib-bibtex",
+]
+
+[tool.setuptools.packages.find]
+include = ["whynot*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.csv", "*.js", "*.zip", "ipopt_bin/*"]

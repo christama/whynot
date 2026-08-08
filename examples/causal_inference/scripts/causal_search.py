@@ -74,14 +74,14 @@ class IC:
         for var, var_type in variable_types.items():
             self._g.nodes[var]["type"] = var_type
         edges_to_add = []
-        for (node_a, node_b) in itertools.combinations(self._g.nodes.keys(), 2):
+        for node_a, node_b in itertools.combinations(self._g.nodes.keys(), 2):
             edges_to_add.append((node_a, node_b))
         self._g.add_edges_from(edges_to_add, marked=False)
 
     def _apply_recursion_rule_1(self):
         added_arrows = False
         for c in self._g.nodes():
-            for (a, b) in itertools.combinations(self._g.neighbors(c), 2):
+            for a, b in itertools.combinations(self._g.neighbors(c), 2):
                 if not self._g.has_edge(a, b):
                     if (
                         c in self._g[a][c]["arrows"]
@@ -107,7 +107,7 @@ class IC:
 
     def _apply_recursion_rule_2(self):
         added_arrows = False
-        for (a, b) in self._g.edges():
+        for a, b in self._g.edges():
             if b not in self._g[a][b]["arrows"]:
                 if self._marked_directed_path(a, b):
                     self._g[a][b]["arrows"].append(b)
@@ -118,7 +118,7 @@ class IC:
         seen = [a]
         neighbors = [(a, neighbor) for neighbor in self._g.neighbors(a)]
         while neighbors:
-            (parent, child) = neighbors.pop()
+            parent, child = neighbors.pop()
             if (
                 child in self._g[parent][child]["arrows"]
                 and self._g[parent][child]["marked"]
@@ -136,7 +136,7 @@ class IC:
         for v_i, v_j in self._g.edges():
             self._g[v_i][v_j]["arrows"] = []
         for v_c in self._g.nodes():
-            for (v_a, v_b) in itertools.combinations(self._g.neighbors(v_c), 2):
+            for v_a, v_b in itertools.combinations(self._g.neighbors(v_c), 2):
                 if not self._g.has_edge(v_a, v_b):
                     if v_c not in self.separating_set(v_a, v_b):
                         self._g[v_a][v_c]["arrows"].append(v_c)
@@ -169,7 +169,7 @@ class IC:
         if not self.max_k:
             self.max_k = len(self._g.nodes) + 1
         for N in range(self.max_k + 1):
-            for (x, y) in list(self._g.edges()):
+            for x, y in list(self._g.edges()):
                 x_neighbors = list(self._g.neighbors(x))
                 y_neighbors = list(self._g.neighbors(y))
                 z_candidates = list(set(x_neighbors + y_neighbors) - set([x, y]))

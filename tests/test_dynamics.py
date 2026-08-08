@@ -1,4 +1,5 @@
 """Tests for methods for working with dynamical systems."""
+
 import copy
 import dataclasses
 
@@ -40,22 +41,34 @@ def test_basestate():
         state1: float = 0
         state2: float = 1
         state3: float = 3
-        num_features: np.ndarray = dataclasses.field(default_factory=lambda: np.array([]))
 
     assert State.num_variables() == 3
     assert State.variable_names() == ["state1", "state2", "state3"]
 
-    state2 = [2]
-    state = State(state2=state2)
+    state = State(state2=2)
     assert state.num_variables() == 3
 
     values = state.values()
-    assert values[0] == 0
-    assert values[1] == [2]
-    assert values[2] == 3
+    assert np.array_equal(values, [0, 2, 3])
 
-    # Ensure values are shallow copied
-    assert values[1] is state2
+
+def test_basestate_shallow_copy():
+    """State.values() must not copy field values; graph tracing relies on it."""
+
+    class Marker:
+        # pylint: disable-msg=too-few-public-methods
+        """Stand-in for the autograd boxes a state holds during graph tracing."""
+
+    @dataclasses.dataclass
+    class State(wn.dynamics.BaseState):
+        state1: object = None
+        state2: object = None
+
+    first, second = Marker(), Marker()
+    values = State(state1=first, state2=second).values()
+
+    assert values[0] is first
+    assert values[1] is second
 
 
 def test_framework_run():
@@ -265,6 +278,7 @@ def test_state_sampler():
 
 def test_config():
     """Test simulator config methods."""
+
     # Make sure config is actually effective
     def covariate_builder(run):
         return len(run.times)

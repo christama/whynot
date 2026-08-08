@@ -1,8 +1,17 @@
 """Simple integration and determinism tests for all simulators."""
+
 import numpy as np
 import pytest
 
 import whynot as wn
+from whynot.simulators.dice.simulator import find_ipopt_executable
+
+# DICE solves its optimization with IPOPT. The binaries bundled with whynot are
+# x86-64 only, so on other architectures IPOPT has to be installed separately.
+requires_ipopt = pytest.mark.skipif(
+    find_ipopt_executable() is None,
+    reason="No usable IPOPT binary on this platform.",
+)
 
 
 def check_shapes(dataset, num_samples):
@@ -110,7 +119,7 @@ def test_dynamics_intervention(simulator, intervention_param, intervention_val):
     [
         (wn.civil_violence, 5),
         (wn.delayed_impact, 10),
-        (wn.dice, 10),
+        pytest.param(wn.dice, 10, marks=requires_ipopt),
         (wn.hiv, 10),
         (wn.lalonde, 445),
         (wn.lotka_volterra, 10),
@@ -158,7 +167,7 @@ def test_simulator_experiments(simulator, num_samples):
     [
         (wn.civil_violence, 5),
         (wn.delayed_impact, 10),
-        (wn.dice, 10),
+        pytest.param(wn.dice, 10, marks=requires_ipopt),
         (wn.hiv, 10),
         (wn.lalonde, 445),
         (wn.lotka_volterra, 10),

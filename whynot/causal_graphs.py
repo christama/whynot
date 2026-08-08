@@ -1,4 +1,5 @@
 """Functions for constructing and analyzing causal graphs."""
+
 from collections.abc import Iterable
 import types
 
@@ -180,6 +181,7 @@ def check_and_cast_args(args):
     allowable as arguments. However, for our purposes, casting ints
     to floats will not affect dependency tracing.
     """
+
     # Currently this function only casts int into floats and raises
     # if the element is a string. This can be expanded to be more robust.
     def check_and_cast(arg):

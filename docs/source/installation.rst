@@ -23,6 +23,20 @@ for installation and isolating the installation inside a `virtualenv`_.
     pip install whynot
 
 
+Installing IPOPT for the DICE Simulator
+---------------------------------------
+The :ref:`dice-simulator` solves an optimization problem with IPOPT. WhyNot
+bundles IPOPT binaries for x86-64 Linux and macOS, so on those platforms there
+is nothing to do. On other architectures, including Apple Silicon, install
+IPOPT separately and make sure it is on your ``PATH``:
+
+.. code:: bash
+
+    conda install -c conda-forge ipopt   # or: brew install ipopt
+
+WhyNot prefers an IPOPT found on ``PATH`` over the bundled binaries. Every other
+simulator works without it.
+
 
 Installing Other Estimators
 ---------------------------

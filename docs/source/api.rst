@@ -41,7 +41,7 @@ Dynamics
 Reinforcement learning
 ----------------------
 .. autoclass:: whynot.gym.envs.ODEEnvBuilder
-    :members: __init__, reset, seed, step
+    :members: __init__, reset, step
 
 
 Framework

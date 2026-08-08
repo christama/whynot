@@ -1,4 +1,5 @@
 """Unit tests for setup and intervention in delayed impact simulator."""
+
 import numpy as np
 import statsmodels
 

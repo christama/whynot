@@ -1,9 +1,9 @@
 """Environment builder for simulators based on dynamical systems."""
+
 import copy
 import inspect
 
 from whynot.gym import Env
-from whynot.gym.utils import seeding
 
 
 class ODEEnvBuilder(Env):
@@ -70,18 +70,12 @@ class ODEEnvBuilder(Env):
         self.intervention_fn = intervention_fn
         self.reward_fn = reward_fn
 
-        self.seed()
-
-    def reset(self):
-        """Reset the state."""
+    def reset(self, *, seed=None, options=None):
+        """Reset the state, optionally reseeding the environment."""
+        super().reset(seed=seed)
         self.state = self.initial_state
         self.time = self.start_time
-        return self._get_observation(self.state)
-
-    def seed(self, seed=None):
-        """Set internal randomness of the environment."""
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
+        return self._get_observation(self.state), {}
 
     def step(self, action):
         """Perform one forward step in the environment.
@@ -95,7 +89,9 @@ class ODEEnvBuilder(Env):
         -------
             observation: A numpy array of shape [1, obs_dim].
             reward: A numpy array of shape [1, 1].
-            done: A numpy array of shape [1, 1]
+            terminated: Always False. The dynamics have no absorbing state; a
+                run ends only by reaching the end of the simulated horizon.
+            truncated: True once the simulation horizon is reached.
             info_dict: An empty dict.
 
         """
@@ -110,11 +106,14 @@ class ODEEnvBuilder(Env):
         self.state = self.simulate_fn(
             initial_state=self.state, config=self.config, intervention=intervention
         )[self.time]
-        done = bool(self.time >= self.terminal_time)
+        # Reaching the end of the horizon is a time limit, not an absorbing
+        # state, so it is reported as truncation. Value bootstrapping at the
+        # final step depends on this distinction.
+        truncated = bool(self.time >= self.terminal_time)
         reward = self._get_reward(intervention, self.state)
-        return self._get_observation(self.state), reward, done, {}
+        return self._get_observation(self.state), reward, False, truncated, {}
 
-    def render(self, mode="human"):
+    def render(self):
         """Render the environment, unused."""
 
     @staticmethod

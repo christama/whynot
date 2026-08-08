@@ -1,4 +1,5 @@
 """Interactive environment for the credit simulator."""
+
 import copy
 
 import numpy as np
@@ -17,7 +18,10 @@ from whynot.simulators.credit import (
 def compute_reward(intervention, state, config):
     """Compute the reward based on the observed state and choosen intervention."""
     return logistic_loss(
-        config, state.features, state.labels, intervention.updates["theta"],
+        config,
+        state.features,
+        state.labels,
+        intervention.updates["theta"],
     )
 
 
@@ -28,7 +32,7 @@ def compute_intervention(action, time):
 
 def credit_action_space(initial_state):
     """Return action space for credit simulator.
-    
+
     The action space is the vector of possible logistic regression
     parameters, which depends on the dimensionality of the features.
     """
@@ -38,7 +42,7 @@ def credit_action_space(initial_state):
 
 def credit_observation_space(initial_state):
     """Return observation space for credit simulator.
-    
+
     The observation space is the vector of possible datasets, which
     must have the same dimensions as the initial state.
     """

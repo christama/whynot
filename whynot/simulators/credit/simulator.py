@@ -9,6 +9,7 @@ and the dynamics are taken from:
     Perdomo, Juan C., Tijana Zrnic, Celestine Mendler-Dünner, and Moritz Hardt.
     "Performative Prediction." arXiv preprint arXiv:2002.06673 (2020).
 """
+
 import copy
 import dataclasses
 from typing import Any
@@ -25,11 +26,14 @@ class State(BaseState):
     """State of the Credit model."""
 
     #: Matrix of agent features (e.g. https://www.kaggle.com/c/GiveMeSomeCredit/data)
-    features: np.ndarray = dataclasses.field(default_factory=lambda: np.array([]))
-    # features: np.ndarray = CreditData.features
+    # CreditData loads lazily and hands back a fresh copy, so the factory both
+    # supplies the real dataset and avoids sharing mutable state across states.
+    features: np.ndarray = dataclasses.field(
+        default_factory=lambda: CreditData.features
+    )
 
     #: Vector indicating whether or not the agent experiences financial distress
-    labels: np.ndarray = dataclasses.field(default_factory=lambda: np.array([]))
+    labels: np.ndarray = dataclasses.field(default_factory=lambda: CreditData.labels)
 
     def values(self):
         """Return the state as a dictionary of numpy arrays."""
@@ -50,7 +54,9 @@ class Config(BaseConfig):
 
     # Dynamics parameters
     #: Subset of the features that can be manipulated by the agent
-    changeable_features: np.ndarray = dataclasses.field(default_factory=lambda: np.array([0, 5, 7]))
+    changeable_features: np.ndarray = dataclasses.field(
+        default_factory=lambda: np.array([0, 5, 7])
+    )
 
     #: Model how much the agent adapt her features in response to a classifier
     epsilon: float = 0.1

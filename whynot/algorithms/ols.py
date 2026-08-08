@@ -1,4 +1,5 @@
 """Ordinary least-squares based-estimators for causal inference."""
+
 from time import perf_counter
 
 import numpy as np

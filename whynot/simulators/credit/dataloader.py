@@ -1,4 +1,5 @@
 """Load and preprocess Kaggle credit dataset."""
+
 import os
 
 import numpy as np

@@ -1,4 +1,5 @@
 """Unit tests for opioid epidemic simulator."""
+
 import whynot as wn
 
 

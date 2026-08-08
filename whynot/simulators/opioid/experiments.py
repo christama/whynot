@@ -1,4 +1,5 @@
 """Basic experiments for opioid simulator."""
+
 import numpy as np
 
 from whynot.dynamics import DynamicsExperiment

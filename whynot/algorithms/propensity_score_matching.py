@@ -1,4 +1,5 @@
 """Average treatment effect estimation with propensity score matching."""
+
 from time import perf_counter
 
 import numpy as np

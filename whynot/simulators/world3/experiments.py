@@ -1,4 +1,5 @@
 """Experiments for world3 simulator."""
+
 import numpy as np
 
 from whynot.dynamics import DynamicsExperiment

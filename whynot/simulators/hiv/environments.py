@@ -6,6 +6,7 @@ Scientific Computation, 2004. APA.
 
 https://pdfs.semanticscholar.org/c030/127238b1dbad2263fba6b64b5dec7c3ffa20.pdf
 """
+
 import numpy as np
 
 from whynot.gym import spaces
@@ -35,7 +36,7 @@ def get_reward(intervention, state):
 
 def observation_space():
     """Return observation space.
- 
+
     The state is (uninfected_T1, infected_T1, uninfected_T2, infected_T2,
     free_virus, immune_response) in units (cells/ml, cells/ml, cells/ml,
     cells/ml, copies/ml, cells/ml).
@@ -60,5 +61,8 @@ HivEnv = ODEEnvBuilder(
 )
 
 register(
-    id="HIV-v0", entry_point=HivEnv, max_episode_steps=400, reward_threshold=1e10,
+    id="HIV-v0",
+    entry_point=HivEnv,
+    max_episode_steps=400,
+    reward_threshold=1e10,
 )

@@ -1,4 +1,5 @@
 """Test causal graph building functionality."""
+
 import copy
 import dataclasses
 import itertools
@@ -9,6 +10,7 @@ import pytest
 
 import whynot as wn
 from whynot.dynamics import BaseConfig, BaseIntervention, BaseState
+
 
 #################################
 # Basic dependency tracing tests.
@@ -35,7 +37,7 @@ def test_dependency_tracing_basic():
 
     # univariate input
     def univar_input(x1):
-        return 2 * x1 ** 2
+        return 2 * x1**2
 
     dependencies = wn.causal_graphs.trace_dependencies(univar_input, 4)
     assert set(dependencies[0]) == set([0])
@@ -53,7 +55,7 @@ def test_noop():
     def noop1(x, y, z):
         a = 2 * x + y - z
         b = x * y * z * 0.0
-        c = 0 * a ** 2 - b
+        c = 0 * a**2 - b
         return c
 
     dependencies = wn.causal_graphs.trace_dependencies(noop1, (1, 2, 3))

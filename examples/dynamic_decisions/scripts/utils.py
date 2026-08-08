@@ -1,4 +1,5 @@
 """Utility functions for performative prediction demo."""
+
 import numpy as np
 
 
@@ -63,7 +64,7 @@ def fit_logistic_regression(X, Y, l2_penalty, tol=1e-7, theta_init=None):
     n, d = X.shape
 
     # Smoothness of the logistic loss
-    smoothness = np.sum(X ** 2) / (4.0 * n)
+    smoothness = np.sum(X**2) / (4.0 * n)
 
     # Optimal initial learning rate
     eta_init = 1 / (smoothness + l2_penalty)

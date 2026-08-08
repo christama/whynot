@@ -3,6 +3,7 @@
 Borrowed from:
     https://github.com/ecreager/delayedimpact-scm-shareable
 """
+
 import os
 from typing import Callable, Iterable
 
@@ -59,7 +60,7 @@ def convert_percentiles(idx):
 
     def convert_one(x):
         partial = 0
-        for ((v, s), (v2, _)) in zip(pdf, pdf[1:]):
+        for (v, s), (v2, _) in zip(pdf, pdf[1:]):
             if partial + s >= x:
                 return v + (v2 - v) * (x - partial) / s
             partial += s
@@ -126,7 +127,7 @@ def _loan_repaid_probs_factory(
             return repay_df[nearest_scores].values
 
         query_score = query_scores
-        nearest_score = scores[scores.get_loc(query_score, method="nearest")]
+        nearest_score = scores[scores.get_indexer([query_score], method="nearest")[0]]
         return repay_df[nearest_score]
 
     return repaid_probs_fn
@@ -189,7 +190,7 @@ def get_inv_cdf_fns(cdfs: DataFrame) -> Iterable[Callable[[Array], Array]]:
                 return series[nearest_scores].values
 
             query_prob = query_probs
-            nearest_prob = index[index.get_loc(query_prob, method="nearest")]
+            nearest_prob = index[index.get_indexer([query_prob], method="nearest")[0]]
             return series[nearest_prob]
 
         return repaid_probs_fn

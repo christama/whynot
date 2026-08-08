@@ -47,13 +47,13 @@ simulator to construct a reinforcement learning environment.
 
     env = gym.make("HIV-v0")
     
-    observation = env.reset()
+    observation, info = env.reset()
     for _ in range(100):
         # Random treatment policy
         action = env.action_space.sample()
-        observation, reward, done, info = env.step(action)
-        if done:
-            observation = env.reset()
+        observation, reward, terminated, truncated, info = env.step(action)
+        if terminated or truncated:
+            observation, info = env.reset()
 
 The code below uses a different environment to study the dynamics of
 classification when individuals *strategically adapt* to the decision rule.
@@ -65,16 +65,16 @@ classification when individuals *strategically adapt* to the decision rule.
     env = gym.make("Credit-v0")
     
     # A credit dataset collected without strategic adaptation
-    dataset = env.reset()
+    dataset, info = env.reset()
     for _ in range(100):
         # Random classifier
         # Replace with your favorite machine learning algorithm!
         classifier = env.action_space.sample()
-        
+
         # New dataset, accounting for strategic response to the classifier
-        dataset, loss, done, info = env.step(classifier)
-        if done:
-            dataset = env.reset()
+        dataset, loss, terminated, truncated, info = env.step(classifier)
+        if terminated or truncated:
+            dataset, info = env.reset()
 
 
 Documentation

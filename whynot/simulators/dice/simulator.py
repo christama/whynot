@@ -1,8 +1,11 @@
 """Simulator for Nordhaus' 2007 DICE model."""
+
 from contextlib import contextmanager
 import copy
 import dataclasses
 import os
+import platform
+import shutil
 import sys
 
 import numpy as np
@@ -387,15 +390,38 @@ def add_constraint(model, func):
     model.add_component(constraint_name, Constraint(model.time, rule=func))
 
 
+def find_ipopt_executable():
+    """Locate a usable IPOPT binary, or return None if there is not one.
+
+    An IPOPT on PATH is preferred over the binaries bundled with whynot, since
+    those are x86-64 only and cannot run natively on, for instance, Apple
+    Silicon.
+    """
+    system_ipopt = shutil.which("ipopt")
+    if system_ipopt is not None:
+        return system_ipopt
+
+    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    bundled = {
+        "linux": os.path.join(cur_dir, "ipopt_bin", "ipopt-linux64"),
+        "darwin": os.path.join(cur_dir, "ipopt_bin", "ipopt-osx"),
+    }.get(sys.platform)
+
+    if bundled is None or platform.machine() not in ("x86_64", "AMD64"):
+        return None
+    return bundled
+
+
 def get_ipopt_solver():
     """Construct a platform specific IPOPT solver."""
-    cur_dir = os.path.abspath(os.path.dirname(__file__))
-    if sys.platform == "linux":
-        executable_path = os.path.join(cur_dir, "ipopt_bin", "ipopt-linux64")
-    elif sys.platform == "darwin":
-        executable_path = os.path.join(cur_dir, "ipopt_bin", "ipopt-osx")
-    else:
-        raise ValueError(f"No IPOPT binaries for platform {sys.platform}")
+    executable_path = find_ipopt_executable()
+    if executable_path is None:
+        raise ValueError(
+            f"No usable IPOPT binary for platform {sys.platform}/"
+            f"{platform.machine()}. Install IPOPT so that it is on your PATH, "
+            "for example with `conda install -c conda-forge ipopt` or "
+            "`brew install ipopt`."
+        )
     return pyomo.opt.SolverFactory("ipopt", executable=executable_path)
 
 

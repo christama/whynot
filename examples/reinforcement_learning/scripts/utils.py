@@ -26,7 +26,7 @@ class Policy(nn.Module):
         ----------
         obs: A numpy array of shape [obs_dim].
 
-        Returns 
+        Returns
         -------
         An integer, the action sampled.
         """
@@ -52,11 +52,11 @@ class NNPolicy(Policy):
 
     def forward(self, obs):
         """Compute action logits from observation.
-        
+
         Parameters
         ----------
         obs: A Tensor of shape [batch_size, obs_dim].
-        
+
         Returns
         -------
         A Tensor of shape [batch_size, ac_dim].
@@ -65,29 +65,27 @@ class NNPolicy(Policy):
 
     def log_prob(self, obs, action):
         """Compute the log probability of an action under the given observation.
-        
+
         Parameters
         ----------
         obs: A Tensor of shape [batch_size, obs_dim].
         action: A Tensor of shape [batch_size, 1].
-        
+
         Returns
         -------
         A Tensor of shape [batch_size, 1], the log probabilities of the actions.
         """
-        log_probs = nn.functional.log_softmax(self.forward(obs), dim=1)[
-            :,
-        ]
+        log_probs = nn.functional.log_softmax(self.forward(obs), dim=1)[:,]
         action_one_hot = nn.functional.one_hot(action, num_classes=self.ac_dim)
         return torch.sum(log_probs * action_one_hot, dim=1)
 
     def sample_action(self, obs):
         """Sample an action for the given observation.
-        
+
         Parameters
         ----------
         obs: A numpy array of shape [obs_dim].
-        
+
         Returns
         -------
         An integer, the action sampled.
@@ -118,13 +116,13 @@ class PolicyGradientAgent:
 
     def train(self, trajectories):
         """Update the policy according to policy gradients.
-        
+
         Parameters
         ----------
         trajectories: A list of dictionaries. Each dictionary has keys `observation`,
         `action`, `reward`, `next_observation`, `terminal`, each mapping to a numpy array
         of shape [num_steps, ?].
-        
+
         Returns
         -------
         A scalar, training loss.
@@ -159,12 +157,12 @@ class PolicyGradientAgent:
 
     def _reward_to_go(self, rewards):
         """Compute discounted reward to go.
-        
+
         Parameters
         ----------
         rewards: A list of rewards {r_0, r_1, ..., r_t', ... r_{T-1}} from a single
         rollout of length T.
-        
+
         Returns
         -------
         A numpy array where the entry at index t is sum_{t'=t}^{T-1} gamma^(t'-t) * r_{t'}.
@@ -242,14 +240,14 @@ def run_training_loop(
 
 def sample_n_trajectories(env, policy, n_trajectories, max_episode_length):
     """Sample n trajectories using the given policy.
-    
+
     Parameters
     ----------
     env: A WhyNot gym environment.
     policy: An instance of Policy.
     n_trajectories: Number of trajectories.
     max_episode_length: Cap on max length for each episode.
-    
+
     Returns
     -------
     A list of n_trajectories dictionaries, each dictionary maps keys `observation`, `action`,
@@ -267,14 +265,14 @@ def sample_trajectories_by_batch_size(
     env, policy, min_timesteps_per_batch, max_episode_length
 ):
     """Sample multiple trajectories using the given policy to achieve total number of steps.
-    
+
     Parameters
     ----------
     env: A WhyNot gym environment.
     policy: An instance of Policy.
     min_timesteps_per_batch: Desired number of timesteps in all trajectories combined.
     max_episode_length: Cap on max length for each episode.
-    
+
     Returns
     -------
     A list of n dictionaries, each dictionary maps keys `observation`, `action`,
@@ -291,20 +289,20 @@ def sample_trajectories_by_batch_size(
 
 def sample_trajectory(env, policy, max_episode_length):
     """Sample one trajectories using the given policy.
-    
+
     Parameters
     ----------
     env: A WhyNot gym environment.
     policy: An instance of Policy.
     max_episode_length: Cap on max length for each episode.
-    
+
     Returns
     -------
     A  dictionary, each dictionary maps keys `observation`, `action`, `reward`,
     `next_observation`, `terminal` to numpy arrays of size episode length.
     """
     # initialize env for the beginning of a new rollout
-    ob = env.reset()
+    ob, _ = env.reset()
     obs, acs, rewards, next_obs, terminals = [], [], [], [], []
     steps = 0
     while True:
@@ -313,14 +311,15 @@ def sample_trajectory(env, policy, max_episode_length):
         ac = policy.sample_action(ob)
         acs.append(ac)
         # take that action and record results
-        ob, rew, done, _ = env.step(ac)
+        ob, rew, terminated, truncated, _ = env.step(ac)
         # record result of taking that action
         steps += 1
         next_obs.append(ob)
         rewards.append(rew)
         # End the rollout if the rollout ended
-        # Note that the rollout can end due to done, or due to max_episode_length
-        if done or steps > max_episode_length:
+        # Note that the rollout can end due to the episode finishing, or due to
+        # max_episode_length
+        if terminated or truncated or steps > max_episode_length:
             rollout_done = 1
         else:
             rollout_done = 0
@@ -356,7 +355,7 @@ def get_trajectory_total_reward(trajectory):
 ####################
 def plot_sample_trajectory(env, policies, max_episode_length, state_names):
     """Plot sample trajectories from policies.
-    
+
     Parameters
     ----------
         policies: A dictionary mapping policy names to policies.

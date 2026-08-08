@@ -1,13 +1,14 @@
 """Interface to the world 3 simulator."""
+
 import dataclasses
+import math
 import os
 
 import numpy as np
-from py_mini_racer import py_mini_racer
+from py_mini_racer import MiniRacer
 
 import whynot as wn
 from whynot.dynamics import BaseConfig, BaseState, BaseIntervention
-
 
 # Load javascript file for execution
 DIR_NAME = os.path.dirname(__file__)
@@ -15,17 +16,11 @@ with open(os.path.join(DIR_NAME, "world3_app.js")) as handle:
     WORLD3_JS_CODE = handle.read()
 
 
-# This is a hack to avoid a deadlock issue that
-# arises when concurrently executing many MiniRacerContexts.
-# There's some sort of issue with how the underlying v8 executor
-# refers to contexts. Execution is thread-safe, but
-# should fully sort this out before final release.
-class PyMiniRacerContext(py_mini_racer.MiniRacer):
-    # pylint: disable-msg=too-few-public-methods
-    """Create an PyMiniRacer execution context."""
-
-    def __del__(self):
-        """Do nothing on deletion to avoid clobbering other processes."""
+# This used to subclass MiniRacer to suppress __del__, working around a deadlock
+# in py_mini_racer 0.6 when many contexts executed concurrently. The maintained
+# mini-racer fork reworked context lifetime management, so suppressing cleanup is
+# no longer necessary and would now leak a V8 context per simulation.
+PyMiniRacerContext = MiniRacer
 
 
 @dataclasses.dataclass
@@ -161,14 +156,51 @@ def to_camel_case(snake_str):
     return components[0] + "".join(x.title() for x in components[1:])
 
 
+def to_js_number(value):
+    """Render a Python number as a JavaScript numeric literal.
+
+    Values are passed to the engine by interpolating them into JavaScript
+    source, and Python spells the non-finite floats ``nan``, ``inf``, and
+    ``-inf``, none of which are valid JavaScript.
+    """
+    number = float(value)
+    if math.isnan(number):
+        return "NaN"
+    if math.isinf(number):
+        return "Infinity" if number > 0 else "-Infinity"
+    return repr(number)
+
+
 def set_state(js_context, initial_state):
-    """Set the state of the world3 simulator."""
-    for stock_name, value in dataclasses.asdict(initial_state).items():
-        js_context.eval(f"{to_camel_case(stock_name)}.initVal = {value}")
+    """Set the state of the world3 simulator.
+
+    Raises
+    ------
+        ValueError
+            If any state variable is not finite. World3 cannot be meaningfully
+            resumed from such a state, and continuing would silently produce
+            non-finite observations.
+
+    """
+    stocks = dataclasses.asdict(initial_state)
+
+    diverged = sorted(
+        name for name, value in stocks.items() if not math.isfinite(value)
+    )
+    if diverged:
+        raise ValueError(
+            "Cannot set world3 state: "
+            + ", ".join(f"{name}={stocks[name]}" for name in diverged)
+            + ". The simulation has diverged."
+        )
+
+    for stock_name, value in stocks.items():
+        js_context.eval(f"{to_camel_case(stock_name)}.initVal = {to_js_number(value)}")
 
     # special case for resources
     js_context.eval(
-        f"nonrenewableResourcesInitialK = {initial_state.nonrenewable_resources}"
+        "nonrenewableResourcesInitialK = "
+        f"{to_js_number(initial_state.nonrenewable_resources)}"
     )
     js_context.eval("resetModel()")
 
@@ -210,25 +242,82 @@ def decode_states(js_context):
 def set_config(js_context, config, intervention):
     """Set the non-state variables of the world3 simulator."""
     # Set global simulator parameters
-    js_context.eval(f"startTime = {config.start_time}")
-    js_context.eval(f"stopTime = {config.end_time}")
-    js_context.eval(f"dt = {config.delta_t}")
+    js_context.eval(f"startTime = {to_js_number(config.start_time)}")
+    js_context.eval(f"stopTime = {to_js_number(config.end_time)}")
+    js_context.eval(f"dt = {to_js_number(config.delta_t)}")
 
     if intervention:
         intervention_config = config.update(intervention)
-        js_context.eval(f"policyYear = {intervention.time}")
+        js_context.eval(f"policyYear = {to_js_number(intervention.time)}")
     else:
         intervention_config = config
-        js_context.eval(f"policyYear = {config.end_time}")
+        js_context.eval(f"policyYear = {to_js_number(config.end_time)}")
 
     intervention_config = dataclasses.asdict(intervention_config)
     for parameter, before in dataclasses.asdict(config).items():
         if parameter in ["policy_year", "start_time", "end_time", "delta_t"]:
             continue
         after = intervention_config[parameter]
-        js_context.eval(f"{to_camel_case(parameter)}.before = {before}")
-        js_context.eval(f"{to_camel_case(parameter)}.after = {after}")
+        js_context.eval(f"{to_camel_case(parameter)}.before = {to_js_number(before)}")
+        js_context.eval(f"{to_camel_case(parameter)}.after = {to_js_number(after)}")
     js_context.eval("resetModel()")
+
+
+#: Iterations fastRun uses to settle the smoothed and delayed quantities before
+#: advancing time. Reproduced here so a stepped engine starts identically.
+WARMUP_ITERATIONS = 100
+
+
+def start_engine(config, initial_state, intervention=None):
+    """Return an engine initialized and warmed up, ready to be stepped.
+
+    World3 carries internal state beyond the twelve stocks, in its smoothed and
+    delayed quantities. That state is built by the warmup below and is *not*
+    recoverable from the stocks, so an engine that is to be advanced
+    incrementally must be initialized once and then kept alive.
+
+    Returns
+    -------
+        js_context: PyMiniRacerContext
+            An engine sitting at ``config.start_time``.
+
+    """
+    js_context = PyMiniRacerContext()
+    js_context.eval(WORLD3_JS_CODE)
+    set_state(js_context, initial_state)
+    set_config(js_context, config, intervention)
+    js_context.eval("resetModel(); initModel();")
+    js_context.eval(
+        f"for (var i = 1; i <= {WARMUP_ITERATIONS}; i++)"
+        " { warmupAuxen(); warmupRates(); tock(); }"
+    )
+    return js_context
+
+
+def step_engine(js_context):
+    """Advance a live engine by a single delta_t."""
+    js_context.eval("timeStep()")
+
+
+def read_state(js_context):
+    """Read the current state out of a live engine."""
+    return State(
+        **{
+            name: js_context.eval(f"{to_camel_case(name)}.k")
+            for name in State.variable_names()
+        }
+    )
+
+
+def set_parameter(js_context, parameter, value):
+    """Set a config parameter on a live engine, effective immediately.
+
+    Parameters switch from ``before`` to ``after`` at ``policyYear``. Setting
+    both makes the value take effect whatever the current time is.
+    """
+    name = to_camel_case(parameter)
+    js_context.eval(f"{name}.before = {to_js_number(value)}")
+    js_context.eval(f"{name}.after = {to_js_number(value)}")
 
 
 def simulate(initial_state, config, intervention=None, seed=None):
