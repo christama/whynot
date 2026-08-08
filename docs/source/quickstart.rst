@@ -140,5 +140,5 @@ as experiments on Gymnasium.
 
 For a complete worked example on the HIV simulator, as well as more details
 about the action space, the observation space, and the reward function see 
-`this example notebook <https://github.com/zykls/whynot/blob/master/examples/reinforcement_learning/hiv_simulator.ipynb>`_
+`this example notebook <https://github.com/socialfoundations/whynot/blob/master/examples/reinforcement_learning/hiv_simulator.ipynb>`_
 and the :ref:`documentation <adams-hiv-simulator>`.

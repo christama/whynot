@@ -38,7 +38,7 @@ The actions, observations, and rewards in the WhyNot Gym environment are all
 represented as numpy arrays. The environment works with algorithms implemented
 in any Python numerical computation library, such as PyTorch or TensorFlow.
 
-See `this notebook <https://github.com/zykls/whynot/blob/master/examples/reinforcement_learning/hiv_simulator.ipynb>`_
+See `this notebook <https://github.com/socialfoundations/whynot/blob/master/examples/reinforcement_learning/hiv_simulator.ipynb>`_
 for an example of training policies on the HIV environment.
 
 Defining a New Custom Environment

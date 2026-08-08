@@ -1,6 +1,6 @@
 ![WhyNot Logo](docs/source/_static/WhyNot_fullcolor.svg)
 
-[![Build Status](https://github.com/zykls/whynot/actions/workflows/ci.yml/badge.svg)](https://github.com/zykls/whynot/actions/workflows/ci.yml)
+[![Build Status](https://github.com/socialfoundations/whynot/actions/workflows/ci.yml/badge.svg)](https://github.com/socialfoundations/whynot/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/whynot/badge/?version=latest)](https://whynot.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -29,7 +29,7 @@ For more detailed information, check out the
 
 WhyNot is still under active development! If you find bugs or have feature
 requests, please file a 
-[Github issue](https://github.com/zykls/whynot/issues). We welcome all kinds of issues, especially those related to correctness, documentation, performance, and new features.
+[Github issue](https://github.com/socialfoundations/whynot/issues). We welcome all kinds of issues, especially those related to correctness, documentation, performance, and new features.
 
 ## Basic installation instructions
 1. (Optionally) create a virtual environment
@@ -44,7 +44,7 @@ pip install whynot
 
 You can also install WhyNot directly from source.
 ```
-git clone https://github.com/zykls/whynot.git
+git clone https://github.com/socialfoundations/whynot.git
 cd whynot
 pip install -r requirements.txt
 ```
@@ -152,7 +152,7 @@ for _ in range(100):
         observation, info = env.reset()
 ```
 For more details on the simulation, as well as a fully worked out policy
-gradient example, see [this notebook](https://github.com/zykls/whynot/blob/master/examples/reinforcement_learning/hiv_simulator.ipynb).  
+gradient example, see [this notebook](https://github.com/socialfoundations/whynot/blob/master/examples/reinforcement_learning/hiv_simulator.ipynb).  
 
 
 ### Strategic classification
@@ -200,11 +200,11 @@ for _ in range(100):
 ```
 For more details on the simulation and a complete example showing the
 standard retraining procedures perform in a strategic setting, see [this
-notebook](https://github.com/zykls/whynot/blob/master/examples/dynamic_decisions/performative_prediction.ipynb).
+notebook](https://github.com/socialfoundations/whynot/blob/master/examples/dynamic_decisions/performative_prediction.ipynb).
 
 Beyond strategic classification, WhyNot also supports simulators and experiments
 evaluating other aspects of machine learning, e.g. [fairness
-criteria](https://github.com/zykls/whynot/blob/master/examples/dynamic_decisions/delayed_impact.ipynb),
+criteria](https://github.com/socialfoundations/whynot/blob/master/examples/dynamic_decisions/delayed_impact.ipynb),
 in dynamic settings.
 
 For more examples and demonstrations of how to design and conduct
