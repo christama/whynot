@@ -42,6 +42,11 @@ source whynot-env/bin/activate
 pip install whynot
 ```
 
+WhyNot requires Python 3.12 or newer. On an older Python, `pip` skips the
+current release and falls back to WhyNot versions from 2020, which fail to
+build with an error about `sklearn` that does not mention the Python version.
+If you see that, check `python --version` first.
+
 You can also install WhyNot directly from source.
 ```
 git clone https://github.com/socialfoundations/whynot.git

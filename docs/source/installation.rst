@@ -6,8 +6,15 @@ Installation
 Basic Installation Instructions
 -------------------------------
 
-WhyNot supports Python3 on both OS X and Linux systems. We recommend using `pip`
-for installation and isolating the installation inside a `virtualenv`_.
+WhyNot requires Python 3.12 or newer, on both OS X and Linux systems. We
+recommend using `pip` for installation and isolating the installation inside a
+`virtualenv`_.
+
+.. note::
+    On an older Python, ``pip`` skips the current release and falls back to
+    WhyNot versions from 2020, which fail to build with an error about
+    ``sklearn`` that does not mention the Python version. If you see that,
+    check ``python --version`` first.
 
 1. (Optionally) create a virtual environment.
 
