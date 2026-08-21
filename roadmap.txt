@@ -1,4 +1,4 @@
-Core:
+Core: 
     Add support for multi-valued/continuous treatments
     Add annotations to simulators that indicate whether a certain feature is
         - continuous, positive, categorical, etc.
